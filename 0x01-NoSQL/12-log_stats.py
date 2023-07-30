@@ -28,8 +28,15 @@ def getDetails(mongoCollection):
     print(f'{status_count} status check')
 
 
-if __name__ == '__main__':
+def run():
+    '''
+    run the main program
+    '''
     client = MongoClient('localhost', 27017)
     db = client['logs']
     collection = db['nginx']
     getDetails(collection)
+
+
+if __name__ == '__main__':
+    run()
