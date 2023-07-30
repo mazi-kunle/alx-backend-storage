@@ -12,6 +12,7 @@ def getDetails(mongoCollection):
     method = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     count = mongoCollection.count_documents({})
     print(f'{count} logs')
+    print('Methods:')
     for i in method:
         i_count = mongoCollection.count_documents(
             {
