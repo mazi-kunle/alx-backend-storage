@@ -8,8 +8,8 @@ from functools import wraps
 
 
 def count_calls(
-        method: Callable[[Any, Union[str, bytes, int, float]], str]
-        ) -> Callable[[Any], Any]:
+        method: Callable
+        ) -> Callable:
     '''
     A decorator
     '''
@@ -22,6 +22,26 @@ def count_calls(
         return method(self, data)
 
     return wrapper
+
+
+def replay(method: Callable) -> None:
+    '''
+    A replay function
+    '''
+    redis_instance = getattr(method.__self__, '_redis', '')
+    no_of_calls = redis_instance.get(method.__qualname__).decode('utf-8')
+    print(f'{method.__qualname__} was called {no_of_calls} times.')
+    inputs = redis_instance.lrange(
+                method.__qualname__ + ':inputs',
+                0, -1)
+
+    outputs = redis_instance.lrange(
+            method.__qualname__ + ':outputs',
+            0, -1)
+    for input, output in zip(inputs, outputs):
+        print("{}(*{}) -> {}".format(
+            method.__qualname__, input.decode('utf-8'), output.decode('utf-8'))
+        )
 
 
 def call_history(method: Callable) -> Callable:
