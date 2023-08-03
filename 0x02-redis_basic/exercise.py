@@ -2,8 +2,26 @@
 '''This is a module'''
 
 import redis
-from typing import Union, Callable
+from typing import Union, Callable, Any
 import uuid
+from functools import wraps
+
+
+def count_calls(
+        method: Callable[[Any, Union[str, bytes, int, float]], str]
+        ) -> Callable[[Any], Any]:
+    '''
+    A decorator
+    '''
+    @wraps(method)
+    def wrapper(self, data) -> Any:
+        '''A wrapper function that calls the function after
+        incrementing the call counter
+        '''
+        self._redis.incr(method.__qualname__)
+        return method(self, data)
+
+    return wrapper
 
 
 class Cache:
@@ -15,6 +33,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         '''
         takes a data argument and returns a string
