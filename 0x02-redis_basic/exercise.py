@@ -7,9 +7,7 @@ import uuid
 from functools import wraps
 
 
-def count_calls(
-        method: Callable
-        ) -> Callable:
+def count_calls(method: Callable) -> Callable:
     '''
     A decorator
     '''
@@ -30,7 +28,7 @@ def replay(method: Callable) -> None:
     '''
     redis_instance = getattr(method.__self__, '_redis', '')
     no_of_calls = redis_instance.get(method.__qualname__).decode('utf-8')
-    print(f'{method.__qualname__} was called {no_of_calls} times.')
+    print(f'{method.__qualname__} was called {no_of_calls} times:')
     inputs = redis_instance.lrange(
                 method.__qualname__ + ':inputs',
                 0, -1)
